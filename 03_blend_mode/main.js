@@ -5,6 +5,7 @@ var ctx;
 var width = 800;
 var height = 800;
 var p;
+var animate = true;
 
 // # Start
 $( function () {
@@ -18,17 +19,41 @@ $( function () {
     // ## Context
     ctx = W.wrappedContext( canvasEl.getContext( '2d' ) );
 
+    ctx.globalCompositeOperation( "screen" );
+
     draw();
+
+    var timer = new W.TickTimer();
+    timer.start();
+
+    if ( animate ) {
+        (function drawLoop() {
+            if ( timer.getTimeSinceLastTickSec() > 1 ) {;
+                W.clearContext( ctx, canvasEl );
+                timer.tick();
+                draw();
+            }
+            window.requestAnimationFrame( drawLoop );
+        }());
+    } else {
+        draw();
+    }
+
 });
 
 // ## Effects
 var colors = [ 
     '#EDEBEB','#E8E6EB','#E7EBE6','#E87B3C','#3DE05D','#763BDB','#D4BB94','#91CF94','#AC8DCC','#445C20','#2C205C','#595653','#525952','#463C59','#545259','#42593C','#574B3D','#573F1C','#262423','#202420','#140921','#0E2108','#211209','#131F13','#1F1613','#19131F','#121212'
 ];
-function setContextToRandomColor () {
+function getRandomColor() {
     var randomIndex = Math.floor( W.randomBetween( 0, colors.length ) );
-    var color = colors[ randomIndex ];
-    ctx.fillStyle( color );
+    return colors[ randomIndex ];
+}
+function setContextToRandomColor ( i, petal, petals ) {
+    var grd=ctx.createLinearGradient( petal[0][0],petal[0][1],petal[1][0],petal[1][1] );
+    grd.addColorStop(0,getRandomColor());
+    grd.addColorStop(1,getRandomColor());
+    ctx.fillStyle( grd );
 }
 
 // ## Drawing
@@ -92,7 +117,7 @@ function draw() {
     PetalLayer
         .create({
             matrixStack: m,
-            numberOfPetals: 18,
+            numberOfPetals: 9,
             innerRadius: spacing[3][0],
             outerRadius: spacing[3][1],
             innerRadiusRotationOffset: -0.02
