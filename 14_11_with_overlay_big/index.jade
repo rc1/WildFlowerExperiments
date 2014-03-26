@@ -1,0 +1,21 @@
+doctype html
+html(lang="en")
+    head
+        script.
+            document.title = window.location.pathname.match(/\/([0-9]+(_[a-z]*)*)\//)[1];
+        title 03_triangle 
+        link( rel='stylesheet', type='text/css', href='/css/style.css' )
+        script( src='/watch.js' )
+    body
+        #canvas
+
+        //- Libraries
+        script( src='../js/libs/jquery-2.1.0.min.js' )
+        script( src='../js/libs/gl-matrix/dist/gl-matrix.js' )
+        script( src='../js/libs/W/build/W.js' )
+
+        //- Main
+        script( src='draw.js' )
+        script( src='main.js' )
+
+        

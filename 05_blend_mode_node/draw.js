@@ -122,10 +122,6 @@ var W = W || require( './../js/libs/W' );
             })
             .on( 'will draw petal', setContextToRandomColor )
             .draw( ctx );
-
-        // Add the overlay using the last gradient which gives a nice effect
-        ctx
-            .fillRect( 0, 0, width, height );
     }
 
     // # Utils

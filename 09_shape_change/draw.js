@@ -27,7 +27,7 @@ var W = W || require( './../js/libs/W' );
 
         if ( animate ) {
             (function drawLoop() {
-                if ( timer.getTimeSinceLastTickSec() > 1 ) {;
+                if ( timer.getTimeSinceLastTickSec() > 1 ) {
                     W.clearContext( ctx, canvasEl );
                     timer.tick();
                     render();
@@ -41,7 +41,33 @@ var W = W || require( './../js/libs/W' );
 
     // ## Effects
     var colors = [ 
-        '#EDEBEB','#E8E6EB','#E7EBE6','#E87B3C','#3DE05D','#763BDB','#D4BB94','#91CF94','#AC8DCC','#445C20','#2C205C','#595653','#525952','#463C59','#545259','#42593C','#574B3D','#573F1C','#262423','#202420','#140921','#0E2108','#211209','#131F13','#1F1613','#19131F','#121212'
+        // '#EDEBEB',
+        // '#E8E6EB',
+        // '#E7EBE6',
+        '#E87B3C',
+        '#3DE05D',
+        '#763BDB',
+        '#D4BB94',
+        '#91CF94',
+        '#AC8DCC',
+        '#445C20',
+        '#2C205C',
+        '#595653',
+        '#525952',
+        '#463C59',
+        '#545259',
+        '#42593C',
+        '#574B3D',
+        '#573F1C',
+        // '#262423',
+        // '#202420',
+        // '#140921',
+        // '#0E2108',
+        // '#211209',
+        // '#131F13',
+        // '#1F1613',
+        // '#19131F',
+        // '#121212'
     ];
     function getRandomColor() {
         var randomIndex = Math.floor( W.randomBetween( 0, colors.length ) );
@@ -71,7 +97,7 @@ var W = W || require( './../js/libs/W' );
         // #### Layers
         var offset = degreesToRadians( 5.4 );
         var spacing = [
-            [ 36, 382 ],
+            [ 36, 200 ],
             [ 92, 352 ],
             [ 162, 352 ],
             [ 226, 312 ]
@@ -80,52 +106,61 @@ var W = W || require( './../js/libs/W' );
         p = PetalLayer
             .create({
                 matrixStack: m,
-                numberOfPetals: 18,
+                numberOfPetals: 8,
                 innerRadius: spacing[0][0],
-                outerRadius: spacing[0][1],
+                length: spacing[0][1],
             })
             .on( 'will draw petal', setContextToRandomColor )
             .draw( ctx );
 
-        m.rotateZ( offset );
-        PetalLayer
-            .create({
-                matrixStack: m,
-                numberOfPetals: 18,
-                innerRadius: spacing[1][0],
-                outerRadius: spacing[1][1],
-                innerRadiusRotationOffset: degreesToRadians( 3 )
-            })
-            .on( 'will draw petal', setContextToRandomColor )
-            .draw( ctx );
+        // m.rotateZ( offset );
+        // PetalLayer
+        //     .create({
+        //         matrixStack: m,
+        //         numberOfPetals: 18,
+        //         innerRadius: spacing[1][0],
+        //         outerRadius: spacing[1][1],
+        //         innerRadiusRotationOffset: degreesToRadians( 3 )
+        //     })
+        //     .on( 'will draw petal', setContextToRandomColor )
+        //     .draw( ctx );
 
-        m.rotateZ( offset );
-        PetalLayer
-            .create({
-                matrixStack: m,
-                numberOfPetals: 18,
-                innerRadius: spacing[2][0],
-                outerRadius: spacing[2][1],
-                innerRadiusRotationOffset: degreesToRadians( 1 )
-            })
-            .on( 'will draw petal', setContextToRandomColor )
-            .draw( ctx );
+        // m.rotateZ( offset );
+        // PetalLayer
+        //     .create({
+        //         matrixStack: m,
+        //         numberOfPetals: 18,
+        //         innerRadius: spacing[2][0],
+        //         outerRadius: spacing[2][1],
+        //         innerRadiusRotationOffset: degreesToRadians( 1 )
+        //     })
+        //     .on( 'will draw petal', setContextToRandomColor )
+        //     .draw( ctx );
 
-        m.rotateZ( offset );
-        PetalLayer
-            .create({
-                matrixStack: m,
-                numberOfPetals: 9,
-                innerRadius: spacing[3][0],
-                outerRadius: spacing[3][1],
-                innerRadiusRotationOffset: -0.02
-            })
-            .on( 'will draw petal', setContextToRandomColor )
-            .draw( ctx );
+        // m.rotateZ( offset );
+        // PetalLayer
+        //     .create({
+        //         matrixStack: m,
+        //         numberOfPetals: 9,
+        //         innerRadius: spacing[3][0],
+        //         outerRadius: spacing[3][1],
+        //         innerRadiusRotationOffset: -0.02
+        //     })
+        //     .on( 'will draw petal', setContextToRandomColor )
+        //     .draw( ctx );
 
-        // Add the overlay using the last gradient which gives a nice effect
-        ctx
-            .fillRect( 0, 0, width, height );
+        drawPalette();
+    }
+
+    // # Palette
+
+    function drawPalette ( ) {
+        var paletteWidth = 10;
+        for ( var i = 0; i < colors.length; ++i ) {
+            ctx 
+                .fillStyle( colors[ i ] ) 
+                .fillRect( width - paletteWidth, W.map( i, 0, colors.length, 0, height ), paletteWidth, height / colors.length );
+        }
     }
 
     // # Utils
@@ -139,7 +174,7 @@ var W = W || require( './../js/libs/W' );
     // * matrixStack <MatrixStack>
     // * numberOfPetals <Number>
     // * innerRadius <Number>
-    // * outerRadius <Number>
+    // * length <Number>
     // Events
     // * 'will draw petal' – called with `fn( i<Number>, petal<Arr>, petals<Arr> )`
     function PetalLayer ( options ) {
@@ -158,21 +193,25 @@ var W = W || require( './../js/libs/W' );
             var p1 = vec2.create();
             var p2 = vec2.create();
             var p3 = vec2.create();
+            var p4 = vec2.create();
             // Create and apply the matrix
             m.push();
             {
-                // General petal rotation
-                m.rotateZ( i );
-                // Outer point
-                m.push().translate( 0, -options.outerRadius ).applyTo( p1 ).pop();
-                // Inner point
-                m.push().rotateZ( options.innerRadiusRotationOffset || 0 ).translate( 0, -options.innerRadius ).applyTo( p2 ).pop();
-                // Stick out bit
-                m.push().translate( W.randomBetween( 0, 200 ), -W.randomBetween( -options.innerRadius, options.outerRadius ) ).applyTo( p3 ).pop();
+
+                var spread = W.randomBetween( 0.05, 0.1 );
+                var innerRadius = options.innerRadius;
+                var length =  W.randomBetween( options.length-30, options.length );
+
+                m
+                    .rotateZ( i ).translate( 0, innerRadius )
+                        .applyTo( p1 )
+                        .push().rotateZ( spread ).translate( 0, length - 10 ).applyTo( p2 ).pop()
+                        .push().translate( 0, length ).applyTo( p3 ).pop()
+                        .push().rotateZ( -spread ).translate( 0, length - 10 ).applyTo( p4 ).pop();
             }
             m.pop();
             // Store the petal
-            this.petals.push([ p1, p2, p3 ]);
+            this.petals.push([ p1, p2, p3, p4 ]);
         }
     }
 
@@ -188,6 +227,7 @@ var W = W || require( './../js/libs/W' );
                 .moveTo( Math.floor( this.petals[i][0][0] ), Math.floor( this.petals[i][0][1] ) )
                 .lineTo( Math.floor( this.petals[i][1][0] ), Math.floor( this.petals[i][1][1] ) )
                 .lineTo( Math.floor( this.petals[i][2][0] ), Math.floor( this.petals[i][2][1] ) )
+                .lineTo( Math.floor( this.petals[i][3][0] ), Math.floor( this.petals[i][3][1] ) )
                 .fill()
                 .closePath();
         }

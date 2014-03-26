@@ -27,7 +27,7 @@ var W = W || require( './../js/libs/W' );
 
         if ( animate ) {
             (function drawLoop() {
-                if ( timer.getTimeSinceLastTickSec() > 1 ) {;
+                if ( timer.getTimeSinceLastTickSec() > 1 ) {
                     W.clearContext( ctx, canvasEl );
                     timer.tick();
                     render();
@@ -39,19 +39,8 @@ var W = W || require( './../js/libs/W' );
         }
     }
 
-    // ## Effects
-    var colors = [ 
-        '#EDEBEB','#E8E6EB','#E7EBE6','#E87B3C','#3DE05D','#763BDB','#D4BB94','#91CF94','#AC8DCC','#445C20','#2C205C','#595653','#525952','#463C59','#545259','#42593C','#574B3D','#573F1C','#262423','#202420','#140921','#0E2108','#211209','#131F13','#1F1613','#19131F','#121212'
-    ];
-    function getRandomColor() {
-        var randomIndex = Math.floor( W.randomBetween( 0, colors.length ) );
-        return colors[ randomIndex ];
-    }
-    function setContextToRandomColor ( i, petal, petals ) {
-        var grd=ctx.createLinearGradient( petal[0][0],petal[0][1],petal[1][0],petal[1][1] );
-        grd.addColorStop(0,getRandomColor());
-        grd.addColorStop(1,getRandomColor());
-        ctx.fillStyle( grd );
+    function setContextToRandomAlpha ( i, petal, petals ) {
+        ctx.fillStyle( 'rgba(255,255,255,'+W.randomBetween(0.2, 0.5)+')' );
     }
 
     // ## Drawing
@@ -62,11 +51,17 @@ var W = W || require( './../js/libs/W' );
             .lineWidth( 9 )
             .lineCap( 'round' );
 
+        // Draw a background 
+        ctx
+            .fillStyle( '#ab8ccb' )
+            .fillRect( 0, 0, width, height );
+
         // ### Create petal layers
         // #### Matrix
         var m = new W.MatrixStack();
         // Move it to the center of the canvas
         m.translate( width/2, height/2 );
+
 
         // #### Layers
         var offset = degreesToRadians( 5.4 );
@@ -84,7 +79,7 @@ var W = W || require( './../js/libs/W' );
                 innerRadius: spacing[0][0],
                 outerRadius: spacing[0][1],
             })
-            .on( 'will draw petal', setContextToRandomColor )
+            .on( 'will draw petal', setContextToRandomAlpha )
             .draw( ctx );
 
         m.rotateZ( offset );
@@ -96,7 +91,7 @@ var W = W || require( './../js/libs/W' );
                 outerRadius: spacing[1][1],
                 innerRadiusRotationOffset: degreesToRadians( 3 )
             })
-            .on( 'will draw petal', setContextToRandomColor )
+            .on( 'will draw petal', setContextToRandomAlpha )
             .draw( ctx );
 
         m.rotateZ( offset );
@@ -108,7 +103,7 @@ var W = W || require( './../js/libs/W' );
                 outerRadius: spacing[2][1],
                 innerRadiusRotationOffset: degreesToRadians( 1 )
             })
-            .on( 'will draw petal', setContextToRandomColor )
+            .on( 'will draw petal', setContextToRandomAlpha )
             .draw( ctx );
 
         m.rotateZ( offset );
@@ -120,12 +115,8 @@ var W = W || require( './../js/libs/W' );
                 outerRadius: spacing[3][1],
                 innerRadiusRotationOffset: -0.02
             })
-            .on( 'will draw petal', setContextToRandomColor )
+            .on( 'will draw petal', setContextToRandomAlpha )
             .draw( ctx );
-
-        // Add the overlay using the last gradient which gives a nice effect
-        ctx
-            .fillRect( 0, 0, width, height );
     }
 
     // # Utils

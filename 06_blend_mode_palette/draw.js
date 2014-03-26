@@ -27,7 +27,7 @@ var W = W || require( './../js/libs/W' );
 
         if ( animate ) {
             (function drawLoop() {
-                if ( timer.getTimeSinceLastTickSec() > 1 ) {;
+                if ( timer.getTimeSinceLastTickSec() > 1 ) {
                     W.clearContext( ctx, canvasEl );
                     timer.tick();
                     render();
@@ -41,7 +41,33 @@ var W = W || require( './../js/libs/W' );
 
     // ## Effects
     var colors = [ 
-        '#EDEBEB','#E8E6EB','#E7EBE6','#E87B3C','#3DE05D','#763BDB','#D4BB94','#91CF94','#AC8DCC','#445C20','#2C205C','#595653','#525952','#463C59','#545259','#42593C','#574B3D','#573F1C','#262423','#202420','#140921','#0E2108','#211209','#131F13','#1F1613','#19131F','#121212'
+        // '#EDEBEB',
+        // '#E8E6EB',
+        // '#E7EBE6',
+        '#E87B3C',
+        '#3DE05D',
+        '#763BDB',
+        '#D4BB94',
+        '#91CF94',
+        '#AC8DCC',
+        '#445C20',
+        '#2C205C',
+        '#595653',
+        '#525952',
+        '#463C59',
+        '#545259',
+        '#42593C',
+        '#574B3D',
+        '#573F1C',
+        '#262423',
+        '#202420',
+        '#140921',
+        '#0E2108',
+        '#211209',
+        '#131F13',
+        '#1F1613',
+        '#19131F',
+        '#121212'
     ];
     function getRandomColor() {
         var randomIndex = Math.floor( W.randomBetween( 0, colors.length ) );
@@ -123,9 +149,18 @@ var W = W || require( './../js/libs/W' );
             .on( 'will draw petal', setContextToRandomColor )
             .draw( ctx );
 
-        // Add the overlay using the last gradient which gives a nice effect
-        ctx
-            .fillRect( 0, 0, width, height );
+        drawPalette();
+    }
+
+    // # Palette
+
+    function drawPalette ( ) {
+        var paletteWidth = 10;
+        for ( var i = 0; i < colors.length; ++i ) {
+            ctx 
+                .fillStyle( colors[ i ] ) 
+                .fillRect( width - paletteWidth, W.map( i, 0, colors.length, 0, height ), paletteWidth, height / colors.length );
+        }
     }
 
     // # Utils

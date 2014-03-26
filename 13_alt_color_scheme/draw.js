@@ -20,7 +20,7 @@ var W = W || require( './../js/libs/W' );
         height = h;
         animate = a;
         
-        ctx.globalCompositeOperation( "screen" );
+        // ctx.globalCompositeOperation( "screen" );
 
         var timer = new W.TickTimer();
         timer.start();
@@ -40,18 +40,66 @@ var W = W || require( './../js/libs/W' );
     }
 
     // ## Effects
-    var colors = [ 
-        '#EDEBEB','#E8E6EB','#E7EBE6','#E87B3C','#3DE05D','#763BDB','#D4BB94','#91CF94','#AC8DCC','#445C20','#2C205C','#595653','#525952','#463C59','#545259','#42593C','#574B3D','#573F1C','#262423','#202420','#140921','#0E2108','#211209','#131F13','#1F1613','#19131F','#121212'
+    var colorsHex = [ 
+    '#5cc584',
+    '#5fc8a6',
+    '#62cac7',
+    '#65b0cc',
+    '#6793ce',
+    '#5cc584'
     ];
-    function getRandomColor() {
-        var randomIndex = Math.floor( W.randomBetween( 0, colors.length ) );
-        return colors[ randomIndex ];
+    // Convert the colours into `[r,g,b]`
+    var colorsRgb = [];
+    for ( var i=0; i<colorsHex.length-1; ++i ) {
+        var originalColor = colorsHex[i];
+        colorsRgb.push( W.hexStringToColorArray( originalColor.replace( '#', '' ) ) );
+    }
+    function getRandomHexColor() {
+        var randomIndex = Math.floor( W.randomBetween( 0, colorsHex.length ) );
+        return colorsHex[ randomIndex ];
+    }
+    function getRandomRgbColor() {
+        var randomIndex = Math.floor( W.randomBetween( 0, colorsRgb.length ) );
+        return colorsRgb[ randomIndex ];
     }
     function setContextToRandomColor ( i, petal, petals ) {
         var grd=ctx.createLinearGradient( petal[0][0],petal[0][1],petal[1][0],petal[1][1] );
-        grd.addColorStop(0,getRandomColor());
-        grd.addColorStop(1,getRandomColor());
+        var rgba1 = getRandomRgbColor();
+        rgba1.push(0);
+        var rgba4 = getRandomRgbColor();
+        rgba4.push(0);
+
+        var startMid = 0.00;
+        var finishMid = 0.8;
+
+        var rgba2 = [ 
+            W.lerp( rgba1[0], rgba4[0], startMid ),
+            W.lerp( rgba1[1], rgba4[1], startMid ),
+            W.lerp( rgba1[2], rgba4[2], startMid ),
+            1
+        ];
+
+        var rgba3 = [ 
+            W.lerp( rgba1[0], rgba4[0], finishMid ),
+            W.lerp( rgba1[1], rgba4[1], finishMid ),
+            W.lerp( rgba1[2], rgba4[2], finishMid ),
+            1
+        ];
+
+        // console.log( rgba2, rgba3 );
+
+        grd.addColorStop( 0, rgbaArrayToCssRrgba( rgba1 ) );
+        grd.addColorStop( startMid, rgbaArrayToCssRrgba( rgba2 ) );
+        grd.addColorStop( finishMid, rgbaArrayToCssRrgba( rgba3 ) );
+        grd.addColorStop( 1, rgbaArrayToCssRrgba( rgba4 ) );
         ctx.fillStyle( grd );
+    }
+    function rgbaArrayToCssRrgba( arr ) {
+        var a = arr[3];
+        a = a * 10;
+        a = Math.floor( a );
+        a = a / 10;
+        return 'rgba('+Math.floor(arr[0])+','+Math.floor(arr[1])+','+Math.floor(arr[2])+','+a+')';
     }
 
     // ## Drawing
@@ -71,16 +119,19 @@ var W = W || require( './../js/libs/W' );
         // #### Layers
         var offset = degreesToRadians( 5.4 );
         var spacing = [
-            [ 36, 382 ],
+            [ 20, 382 ],
             [ 92, 352 ],
             [ 162, 352 ],
             [ 226, 312 ]
         ];
 
+        var min =17;
+        var max = 28;
+
         p = PetalLayer
             .create({
                 matrixStack: m,
-                numberOfPetals: 18,
+                numberOfPetals: W.randomBetween(min, max),
                 innerRadius: spacing[0][0],
                 outerRadius: spacing[0][1],
             })
@@ -91,7 +142,7 @@ var W = W || require( './../js/libs/W' );
         PetalLayer
             .create({
                 matrixStack: m,
-                numberOfPetals: 18,
+                numberOfPetals: W.randomBetween(min, max),
                 innerRadius: spacing[1][0],
                 outerRadius: spacing[1][1],
                 innerRadiusRotationOffset: degreesToRadians( 3 )
@@ -103,7 +154,7 @@ var W = W || require( './../js/libs/W' );
         PetalLayer
             .create({
                 matrixStack: m,
-                numberOfPetals: 18,
+                numberOfPetals:W.randomBetween(min, max),
                 innerRadius: spacing[2][0],
                 outerRadius: spacing[2][1],
                 innerRadiusRotationOffset: degreesToRadians( 1 )
@@ -115,7 +166,7 @@ var W = W || require( './../js/libs/W' );
         PetalLayer
             .create({
                 matrixStack: m,
-                numberOfPetals: 9,
+                numberOfPetals: W.randomBetween(min, max),
                 innerRadius: spacing[3][0],
                 outerRadius: spacing[3][1],
                 innerRadiusRotationOffset: -0.02
@@ -123,9 +174,13 @@ var W = W || require( './../js/libs/W' );
             .on( 'will draw petal', setContextToRandomColor )
             .draw( ctx );
 
-        // Add the overlay using the last gradient which gives a nice effect
-        ctx
-            .fillRect( 0, 0, width, height );
+        // // Add the overlay using the last gradient which gives a nice effect
+        // var grd=ctx.createLinearGradient( 0,0,width,height );
+        // grd.addColorStop(0,getRandomHexColor());
+        // grd.addColorStop(1,getRandomHexColor());
+        // ctx.fillStyle( grd );
+        // ctx
+        //     .fillRect( 0, 0, width, height );
     }
 
     // # Utils
