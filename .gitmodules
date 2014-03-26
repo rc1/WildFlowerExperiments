@@ -1,0 +1,6 @@
+[submodule "js/libs/W"]
+	path = js/libs/W
+	url = git@github.com:theworkers/W.js.git
+[submodule "js/libs/gl-matrix"]
+	path = js/libs/gl-matrix
+	url = https://github.com/toji/gl-matrix
