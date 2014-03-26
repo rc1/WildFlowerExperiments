@@ -1,7 +1,8 @@
 doctype html
 html(lang="en")
     head
-        title 01_color_flower
+        script.
+            document.title = window.location.pathname.match(/\/([0-9]+(_[a-z]*)*)\//)[1];
         link( rel='stylesheet', type='text/css', href='/css/style.css' )
         script( src='/watch.js' )
     body
